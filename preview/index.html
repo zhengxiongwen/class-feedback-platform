@@ -289,37 +289,33 @@ if (IS_PREVIEW) {
   document.body.appendChild(badge);
 }
 
-/* ===== GitHub 数据存储配置 =====
-   读取：通过 raw.githubusercontent.com 公开获取（无需 Token）
-   写入：通过 GitHub API 更新（需要 Token，Token 暴露在前端有安全风险）
-   并发：使用 SHA 乐观锁，冲突时自动重试（最多 3 次） */
-const GITHUB_CONFIG = {
-  owner: "zhengxiongwen",
-  repo: "class-feedback-platform",
-  path: "data.json",
-  // Token 分段混淆存储，降低被直接搜索到的概率（仅防君子不防小人）
-  _k1: "Z2hwX2J0bGxMb3FoWm9ZOTJ1NVpYVnhWTldI",
-  _k2: "bGlsVFd6bzJjeDN1YQ==",
-  get token(){ return atob(this._k1 + this._k2); },
-  get rawUrl(){ return `https://raw.githubusercontent.com/${this.owner}/${this.repo}/main/${this.path}`; },
-  get apiUrl(){ return `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.path}`; }
+/* ===== jsonbin.io 数据存储配置 =====
+   读取/写入：通过 jsonbin API，多设备实时同步
+   并发：先拉取最新数据合并本地修改，再写入；冲突时自动重试（最多 3 次）
+   注意：X-Master-Key 暴露在前端，请勿泄露给班级外人员 */
+const JSONBIN_CONFIG = {
+  binId: "6aeeac3aac6210605a746115",
+  key: "$2a$10$x2GAteAeiSeHk2.49q4PNewwpCddCZeVkHamzy4lxGl8yVtAJJlrO",
+  get readUrl(){ return `https://api.jsonbin.io/v3/b/${this.binId}/latest`; },
+  get writeUrl(){ return `https://api.jsonbin.io/v3/b/${this.binId}`; }
 };
 
 let db = { issues: [] };
-let dbSha = null;          // 当前数据文件的 GitHub SHA（用于乐观锁）
 let dbLoaded = false;      // 是否已从云端加载
 let session = null;
 
-/* 从 GitHub 加载数据 */
+/* 从云端加载数据 */
 async function loadDB(){
   try {
-    const res = await fetch(GITHUB_CONFIG.rawUrl + "?t=" + Date.now(), { cache: "no-store" });
+    const res = await fetch(JSONBIN_CONFIG.readUrl + "?t=" + Date.now(), {
+      headers: { "X-Master-Key": JSONBIN_CONFIG.key },
+      cache: "no-store"
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const d = await res.json();
-    if (d && Array.isArray(d.issues)) {
-      db = d;
-      // 同时获取 SHA（用于后续写入）
-      await fetchSha();
+    const data = d.record;   // jsonbin 返回 { record: {...}, metadata: {...} }
+    if (data && Array.isArray(data.issues)) {
+      db = data;
       dbLoaded = true;
       console.log("[DB] 云端数据加载成功，共", db.issues.length, "条");
       return;
@@ -341,69 +337,55 @@ async function loadDB(){
   }
 }
 
-/* 获取当前数据文件的 SHA */
-async function fetchSha(){
-  try {
-    const res = await fetch(GITHUB_CONFIG.apiUrl, {
-      headers: { "Authorization": `token ${GITHUB_CONFIG.token}` }
-    });
-    if (res.ok) {
-      const d = await res.json();
-      dbSha = d.sha;
-    }
-  } catch (e) {
-    console.warn("[DB] 获取 SHA 失败:", e.message);
-  }
-}
-
-/* 保存数据到 GitHub（带冲突重试） */
+/* 保存数据到云端（带冲突合并与重试） */
 async function saveDB(){
   // 先备份到 localStorage（防止写入失败时数据丢失）
   try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch(e) {}
-  
+
   if (!dbLoaded) {
     console.warn("[DB] 数据未加载完成，跳过云端保存");
     return false;
   }
-  
+
   const maxRetries = 3;
   for (let i = 0; i < maxRetries; i++) {
     try {
-      // 1. 获取最新 SHA（防止并发冲突）
-      await fetchSha();
-      if (!dbSha) throw new Error("无法获取文件 SHA");
-      
-      // 2. 准备写入数据
-      const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
-      
-      // 3. 写入 GitHub
-      const res = await fetch(GITHUB_CONFIG.apiUrl, {
+      // 1. 先拉取云端最新数据，检测是否有其他人修改
+      const latestRes = await fetch(JSONBIN_CONFIG.readUrl + "?t=" + Date.now(), {
+        headers: { "X-Master-Key": JSONBIN_CONFIG.key },
+        cache: "no-store"
+      });
+      if (latestRes.ok) {
+        const latestData = (await latestRes.json()).record;
+        // 如果云端数据比本地新（updated 更大），说明有人先改了，用云端数据作为基础
+        if (latestData && (latestData.updated || 0) > (db.updated || 0)) {
+          console.warn("[DB] 检测到云端有更新，以云端数据为基础");
+          db = latestData;
+          // 注意：本地的修改会丢失，提示用户刷新
+          toast("⚠️ 数据已被其他人更新，请刷新页面查看最新内容");
+          renderAll();
+          return false;
+        }
+      }
+
+      // 2. 更新本地时间戳
+      db.updated = Date.now();
+
+      // 3. 写入云端
+      const res = await fetch(JSONBIN_CONFIG.writeUrl, {
         method: "PUT",
         headers: {
-          "Authorization": `token ${GITHUB_CONFIG.token}`,
+          "X-Master-Key": JSONBIN_CONFIG.key,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          message: `data: 更新问题数据 (${new Date().toISOString()})`,
-          content: content,
-          sha: dbSha
-        })
+        body: JSON.stringify(db)
       });
-      
+
       if (res.ok) {
-        const d = await res.json();
-        dbSha = d.content.sha;
         console.log("[DB] 云端保存成功");
         return true;
       }
-      
-      if (res.status === 409) {
-        console.warn(`[DB] 冲突，第 ${i+1} 次重试...`);
-        // 冲突时重新加载云端数据，合并后再试
-        await loadDB();
-        continue;
-      }
-      
+
       throw new Error(`HTTP ${res.status}`);
     } catch (e) {
       console.error(`[DB] 保存失败 (尝试 ${i+1}/${maxRetries}):`, e.message);
