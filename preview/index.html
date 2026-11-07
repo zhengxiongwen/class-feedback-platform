@@ -105,6 +105,20 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--primary)
 .del-cancel{background:#fff;border:1.5px solid #e6e8ef;border-radius:8px;padding:9px 20px;font-size:13px;color:var(--muted)}
 .del-record{margin-top:12px;border-left:4px solid var(--danger);background:#fff8f8;border-radius:0 10px 10px 0;padding:12px 14px;font-size:13px;line-height:1.8}
 .del-record b{color:var(--danger)}
+.orig-status{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-left:4px}
+.orig-open{background:#fff4e5;color:var(--warn)}
+.orig-doing{background:#e8f1ff;color:var(--primary)}
+.orig-done{background:#e8fbf1;color:var(--ok)}
+
+/* 删除任务板块分区 */
+.trash-group{margin-bottom:20px;border-radius:var(--radius);padding:14px;border:1px solid #eef0f5}
+.trash-group.g-open{background:#fffdf8;border-color:#ffe6bf}
+.trash-group.g-doing{background:#f8faff;border-color:#d4e0ff}
+.trash-group.g-done{background:#f7fdfa;border-color:#c8eedb}
+.trash-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.trash-title{font-size:15px;font-weight:800}
+.trash-count{margin-left:auto;font-size:12px;font-weight:700;background:#fff;border:1px solid #e6e8ef;border-radius:999px;padding:2px 10px;color:var(--muted)}
+.trash-desc{font-size:12px;color:var(--muted);margin-bottom:12px}
 
 /* 工作过程面板（班委接单） */
 .process{margin-top:12px;border:1px solid #e6e8ef;border-radius:12px;padding:14px;background:#fafbfe}
@@ -293,8 +307,14 @@ function seedDB(){
     { id:"i3", type:"班级活动", title:"建议组织一次秋游团建", content:"期中后大家压力较大，建议组织一次户外团建增进感情。", owner:"文艺委员", author:"赵同学", status:"open", likes:["a","b"], dislikes:[], createdAt:now-0.5*864e5,
       trace:[{t:now-0.5*864e5, text:"赵同学 提交了问题"}]},
     { id:"i4", type:"其他", title:"（示例）一条被删除的问题", content:"该问题与「建议组织一次秋游团建」内容重复，已由班长删除。", owner:"文艺委员", author:"孙同学", status:"deleted", likes:[], dislikes:[], createdAt:now-1*864e5,
-      deletion:{ by:"张班长", role:"班长", time:now-0.2*864e5, nature:"重复问题", reason:"与「建议组织一次秋游团建」内容重复，为避免分散讨论，合并到原帖处理。" },
-      trace:[{t:now-1*864e5, text:"孙同学 提交了问题"},{t:now-0.2*864e5, text:"张班长（班长）删除了该问题：重复问题"}]}
+      deletion:{ by:"张班长", role:"班长", time:now-0.2*864e5, nature:"重复问题", reason:"与「建议组织一次秋游团建」内容重复，为避免分散讨论，合并到原帖处理。", originStatus:"open" },
+      trace:[{t:now-1*864e5, text:"孙同学 提交了问题"},{t:now-0.2*864e5, text:"张班长（班长）删除了该问题（原为未接单状态）：重复问题"}]},
+    { id:"i5", type:"生活服务", title:"（示例）处理中被删除的问题", content:"反映宿舍楼道灯损坏，后经确认已由后勤统一报修。", owner:"生活委员", author:"周同学", status:"deleted", likes:["a"], dislikes:[], createdAt:now-3*864e5, acceptedAt:now-2.6*864e5, slaHours:24,
+      deletion:{ by:"张班长", role:"班长", time:now-1.2*864e5, nature:"已线下解决", reason:"该问题已由后勤处统一报修并当日修复，班委工作已实际完成，为避免重复积压予以删除。", originStatus:"doing" },
+      trace:[{t:now-3*864e5, text:"周同学 提交了问题"},{t:now-2.6*864e5, text:"生活委员 接单，承诺 24 小时内处理"},{t:now-1.2*864e5, text:"张班长（班长）删除了该问题（原为处理中状态）：已线下解决"}]},
+    { id:"i6", type:"班级活动", title:"（示例）完成后被删除的问题", content:"建议班级统一购买期末复习资料。", owner:"学习委员", author:"吴同学", status:"deleted", likes:["a","b","c"], dislikes:[], createdAt:now-9*864e5, acceptedAt:now-8.5*864e5, resolvedAt:now-7*864e5, slaHours:168,
+      deletion:{ by:"张班长", role:"班长", time:now-2*864e5, nature:"内容失实", reason:"经核实该建议实际由学院统一采购发放，问题前提不成立，故删除已归档记录。", originStatus:"resolved" },
+      trace:[{t:now-9*864e5, text:"吴同学 提交了问题"},{t:now-8.5*864e5, text:"学习委员 接单，承诺 168 小时内处理"},{t:now-7*864e5, text:"学习委员 标记为已解决，SLA 达标 ✅"},{t:now-2*864e5, text:"张班长（班长）删除了该问题（原为已完成状态）：内容失实"}]}
   ]};
   localStorage.setItem(DB_KEY, JSON.stringify(d));
   return d;
@@ -412,7 +432,8 @@ function issueCard(i, opts={}){
   const sla = slaInfo(i);
   const canAccept = opts.order && i.status==="open" && (session.role==="cadre" || session.role==="teacher");
   const canResolve = opts.order && i.status==="doing" && canOperateOrder(i);
-  const showDelete = opts.plaza && i.status!=="deleted" && canDeleteAny();
+  // 删除入口：问题广场（未解决）+ 成就栏（已解决），要求一致
+  const showDelete = (opts.plaza || opts.hall) && i.status!=="deleted" && canDeleteAny();
   const onTime = i.resolvedAt && i.acceptedAt ? (i.resolvedAt - i.acceptedAt <= (i.slaHours||48)*36e5) : null;
 
   /* 工作过程面板（班委接单页） */
@@ -450,8 +471,10 @@ function issueCard(i, opts={}){
     </div>` : "";
 
   /* 删除记录展示（删除任务板块） */
+  const origLabel = { open:"未接单即被删除", doing:"处理中被删除", resolved:"已完成后被删除" };
+  const origClsMap = { open:"orig-open", doing:"orig-doing", resolved:"orig-done" };
   const delRecordHtml = (i.status==="deleted" && i.deletion) ? `<div class="del-record">
-      <b>删除记录</b><br>
+      <b>删除记录</b> <span class="orig-status ${origClsMap[i.deletion.originStatus]||""}">${origLabel[i.deletion.originStatus]||"状态未记录"}</span><br>
       🕐 删除时间：${fmtTime(i.deletion.time)}<br>
       🏷 原因性质：${esc(i.deletion.nature)}<br>
       💬 删除动因：${esc(i.deletion.reason)}<br>
@@ -493,6 +516,7 @@ function bindIssueActions(container){
     const issue = db.issues.find(x=>x.id===id); if(!issue) return;
     const act = btn.dataset.act, now = Date.now();
     issue.dislikes = issue.dislikes || [];
+    const prevStatus = issue.status;   // 记录操作前的原始状态
 
     if(act==="like" || act==="dislike"){
       const arr = act==="like" ? issue.likes : issue.dislikes;
@@ -534,8 +558,10 @@ function bindIssueActions(container){
       const reason = card.querySelector(".del-reason").value.trim();
       if(!reason){ toast("请填写删除动因"); return; }
       issue.status = "deleted";
-      issue.deletion = { by:session.name, role:(session.cadre||"教师"), time:now, nature, reason };
-      issue.trace.push({t:now, text:`${session.name}（${session.cadre||"教师"}）删除了该问题：${nature}——${reason.length>40 ? reason.slice(0,40)+"…" : reason}`});
+      issue.deletion = { by:session.name, role:(session.cadre||"教师"), time:now, nature, reason,
+                         originStatus: prevStatus };   // 记录删除前状态，用于删除板块分区
+      const label = { open:"未接单状态", doing:"处理中状态", resolved:"已完成状态" }[prevStatus] || "";
+      issue.trace.push({t:now, text:`${session.name}（${session.cadre||"教师"}）删除了该问题（原为${label}）：${nature}——${reason.length>40 ? reason.slice(0,40)+"…" : reason}`});
       toast("🗑 已删除，可在「删除任务」板块查看留痕");
     }
     saveDB(); renderAll();
@@ -575,9 +601,28 @@ function renderAll(){
   const hall = alive.filter(i=>i.status==="resolved").sort((a,b)=>score(b)-score(a));
   $("#hall-list").innerHTML = hall.length ? hall.map(i=>issueCard(i,{hall:true,trace:true})).join("") : '<div class="empty">还没有已解决的问题，期待班委们的第一份成绩单！</div>';
 
-  // 删除任务板块
-  const trash = db.issues.filter(i=>i.status==="deleted").sort((a,b)=>b.deletion.time-a.deletion.time);
-  $("#trash-list").innerHTML = trash.length ? trash.map(i=>issueCard(i,{trace:true})).join("") : '<div class="empty">暂无被删除的问题</div>';
+  // 删除任务板块：按删除前状态分成三类展示
+  const trashAll = db.issues.filter(i=>i.status==="deleted")
+                            .map(i=>{ i._orig = (i.deletion && i.deletion.originStatus) || "open"; return i; })
+                            .sort((a,b)=>b.deletion.time-a.deletion.time);
+  const groups = [
+    { key:"open",     title:"🚫 未接单即被删除", desc:"问题尚未被任何班委接单，就被班长删除", cls:"g-open" },
+    { key:"doing",    title:"⏳ 处理中被删除",   desc:"班委已接单、工作正在推进时被删除",     cls:"g-doing" },
+    { key:"resolved", title:"✅ 已完成后被删除", desc:"问题已归档到成就栏后，又被删除",       cls:"g-done" }
+  ];
+  $("#trash-list").innerHTML = trashAll.length
+    ? groups.map(g=>{
+        const items = trashAll.filter(i=>i._orig===g.key);
+        return `<div class="trash-group ${g.cls}">
+          <div class="trash-head">
+            <span class="trash-title">${g.title}</span>
+            <span class="trash-count">${items.length} 条</span>
+          </div>
+          <p class="trash-desc">${g.desc}</p>
+          ${items.length ? items.map(i=>issueCard(i,{trace:true})).join("") : '<div class="empty" style="padding:20px 0">该分类下暂无记录</div>'}
+        </div>`;
+      }).join("")
+    : '<div class="empty">暂无被删除的问题</div>';
 }
 ["#plaza-filter","#plaza-sort","#orders-filter"].forEach(s=>$(s).addEventListener("change", renderAll));
 ["#my-issues","#plaza-list","#orders-list","#hall-list","#trash-list"].forEach(s=>bindIssueActions($(s)));
