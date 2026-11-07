@@ -225,7 +225,18 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--primary)
 const CADRES = ["班长","团支书","组织委员","学习委员","文艺委员","体育委员","心理委员","宣传委员","生活委员"];
 const SLA_HOURS = 48;                 // 处理承诺：接单后 48 小时内解决
 const HOT_WINDOW = 48;                // 热度：近48小时点赞权重加倍
-const DB_KEY = "class_feedback_db_v1";
+
+/* ===== 环境隔离：预览站与正式站共用同一份代码，靠 URL 路径区分 =====
+   /preview/  = 预览环境（改代码先看这里，数据独立，随便测试不污染正式数据）
+   /          = 正式环境（同学使用的地址）                              */
+const IS_PREVIEW = location.pathname.replace(/\/+$/, "").endsWith("/preview");
+const DB_KEY = IS_PREVIEW ? "class_feedback_db_preview_v1" : "class_feedback_db_v1";
+if (IS_PREVIEW) {
+  const badge = document.createElement("div");
+  badge.textContent = "🧪 预览版 · 尚未发布";
+  badge.style.cssText = "position:fixed;top:0;right:0;z-index:999;background:#f5a623;color:#fff;font-size:12px;font-weight:700;padding:6px 14px;border-radius:0 0 0 10px;box-shadow:0 2px 8px rgba(0,0,0,.2)";
+  document.body.appendChild(badge);
+}
 
 let db = loadDB();
 let session = null;
