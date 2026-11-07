@@ -50,7 +50,7 @@ header{position:sticky;top:0;z-index:50;background:var(--card);box-shadow:var(--
 .user-chip .badge{background:#eef1ff;color:var(--primary);border-radius:999px;padding:4px 12px;font-weight:600}
 #logout-btn{border:1px solid #e6e8ef;background:#fff;border-radius:8px;padding:6px 12px;font-size:13px;color:var(--muted)}
 nav.tabs{max-width:1100px;margin:0 auto;display:flex;gap:4px;padding:0 8px;overflow-x:auto}
-.tab{flex:1;min-width:120px;border:none;background:none;padding:12px 8px;font-size:15px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+.tab{flex:1;min-width:104px;border:none;background:none;padding:12px 8px;font-size:15px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
 .tab.active{color:var(--primary);border-bottom-color:var(--primary)}
 main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
 
@@ -74,6 +74,7 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--primary)
 .tag-status-open{background:#fff4e5;color:var(--warn)}
 .tag-status-doing{background:#e8f1ff;color:var(--primary)}
 .tag-status-done{background:#e8fbf1;color:var(--ok)}
+.tag-status-deleted{background:#f0f1f5;color:var(--muted)}
 .tag-hot{background:#ffeae6;color:var(--hot)}
 .issue-title{font-weight:700;font-size:15px}
 .issue-content{font-size:14px;color:#4a5165;margin:6px 0 10px;line-height:1.6}
@@ -81,16 +82,55 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--primary)
 .issue-actions{display:flex;gap:10px;margin-top:12px;align-items:center;flex-wrap:wrap}
 .like-btn{border:1.5px solid #e6e8ef;background:#fff;border-radius:999px;padding:6px 16px;font-size:14px;display:flex;align-items:center;gap:6px;transition:.15s}
 .like-btn.liked{border-color:var(--hot);color:var(--hot);background:#fff3f1}
+.like-btn.disliked{border-color:#5b6b8c;color:#41537a;background:#eef1f7}
 .act-btn{border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;color:#fff}
 .act-accept{background:var(--primary)}
 .act-resolve{background:var(--ok)}
+.act-delete{background:#fff;color:var(--danger);border:1.5px solid #f3c1c3}
+.act-delete:hover{background:#fff0f1}
+.sla-select{width:auto;min-width:120px;padding:8px 10px;font-size:13px}
 .sla{font-size:12px;font-weight:700;border-radius:8px;padding:5px 10px}
 .sla-ok{background:#e8fbf1;color:var(--ok)}
 .sla-warn{background:#fff4e5;color:var(--warn)}
 .sla-over{background:#ffe9ea;color:var(--danger)}
 .empty{text-align:center;color:var(--muted);padding:48px 0;font-size:14px}
 
-/* 成就栏时间线 */
+/* 删除理由表单 */
+.del-form{margin-top:12px;border:1.5px dashed #f3c1c3;background:#fff8f8;border-radius:12px;padding:14px}
+.del-form h4{font-size:14px;color:var(--danger);margin-bottom:8px}
+.del-form label{font-size:12px;color:var(--muted);display:block;margin:10px 0 4px}
+.del-form textarea{min-height:70px;background:#fff}
+.del-form .row{display:flex;gap:10px;margin-top:12px}
+.del-confirm{background:var(--danger);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:13px;font-weight:600}
+.del-cancel{background:#fff;border:1.5px solid #e6e8ef;border-radius:8px;padding:9px 20px;font-size:13px;color:var(--muted)}
+.del-record{margin-top:12px;border-left:4px solid var(--danger);background:#fff8f8;border-radius:0 10px 10px 0;padding:12px 14px;font-size:13px;line-height:1.8}
+.del-record b{color:var(--danger)}
+.orig-status{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 9px;margin-left:4px}
+.orig-open{background:#fff4e5;color:var(--warn)}
+.orig-doing{background:#e8f1ff;color:var(--primary)}
+.orig-done{background:#e8fbf1;color:var(--ok)}
+
+/* 删除任务板块分区 */
+.trash-group{margin-bottom:20px;border-radius:var(--radius);padding:14px;border:1px solid #eef0f5}
+.trash-group.g-open{background:#fffdf8;border-color:#ffe6bf}
+.trash-group.g-doing{background:#f8faff;border-color:#d4e0ff}
+.trash-group.g-done{background:#f7fdfa;border-color:#c8eedb}
+.trash-head{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.trash-title{font-size:15px;font-weight:800}
+.trash-count{margin-left:auto;font-size:12px;font-weight:700;background:#fff;border:1px solid #e6e8ef;border-radius:999px;padding:2px 10px;color:var(--muted)}
+.trash-desc{font-size:12px;color:var(--muted);margin-bottom:12px}
+
+/* 工作过程面板（班委接单） */
+.process{margin-top:12px;border:1px solid #e6e8ef;border-radius:12px;padding:14px;background:#fafbfe}
+.process h4{font-size:13px;color:var(--primary);margin-bottom:10px}
+.process ul{list-style:none;display:flex;flex-direction:column;gap:8px;font-size:13px;color:#4a5165}
+.process li{display:flex;gap:8px;align-items:flex-start;line-height:1.6}
+.process li .k{flex-shrink:0;color:var(--muted);min-width:118px}
+.plan-edit{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.plan-edit textarea{flex:1;min-width:220px;min-height:64px;font-size:13px}
+.plan-save{background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;align-self:flex-end}
+
+/* 时间线 */
 .trace{margin-top:12px;border-left:3px solid #e6e8ef;padding-left:16px;display:flex;flex-direction:column;gap:10px}
 .trace-item{position:relative;font-size:13px;color:#4a5165}
 .trace-item::before{content:"";position:absolute;left:-22px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--primary);border:2px solid #fff;box-shadow:0 0 0 2px #d8defc}
@@ -104,7 +144,8 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--primary)
   .role-grid,.cadre-grid{grid-template-columns:repeat(3,1fr)}
   .header-inner{padding:10px 12px}
   main{padding:14px 12px 48px}
-  .tab{font-size:14px;min-width:100px}
+  .tab{font-size:13px;min-width:92px}
+  .process li .k{min-width:100px}
 }
 </style>
 </head>
@@ -117,7 +158,7 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--primary)
   <div class="login-card">
     <h2>登录 / 选择身份</h2>
     <button class="wx-btn" id="wx-login">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.7 4C4.9 4 2 6.6 2 9.9c0 1.9 1 3.5 2.6 4.6l-.7 2.2 2.6-1.3c.6.2 1.4.3 2.2.3h.6A6.3 6.3 0 0 1 9 13.5C9 10.2 11.9 7.5 15.6 7.5h.5C15.5 5.4 12.5 4 8.7 4zm-2 3.1a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8zm4.2 0a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8zM22 13.6c0-2.7-2.4-4.9-5.4-4.9s-5.4 2.2-5.4 4.9 2.4 4.9 5.4 4.9c.6 0 1.2-.1 1.8-.3l2.2 1.1-.6-1.9A4.7 4.7 0 0 0 22 13.6zm-7.3-1.5a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6zm3.9 0a.8.8 0 1 1 0 1.6.8.8 0 0 1 0-1.6z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.7 4C4.9 4 2 6.6 2 9.9c0 1.9 1 3.5 2.6 4.6l-.7 2.2 2.6-1.3c.6.2 1.4.3 2.2.3h.6A6.3 6.3 0 0 1 9 13.5C9 10.2 11.9 7.5 15.6 7.5h.5C15.5 5.4 12.5 4 8.7 4zm-2 3.1a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8zm4.2 0a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8zM22 13.6c0-2.7-2.4-4.9-5.4-4.9s-5.4 2.2-5.4 4.9 2.4 4.9 5.4 4.9c.6 0 1.2-.1 1.8-.3l2.2 1.1-.6-1.9A4.7 4.7 0 0 0 22 13.6zm-7.3-1.5a.8.8 0 1 1 0 1.6.8.8 0 1 1 0 1.6zm3.9 0a.8.8 0 1 1 0 1.6.8.8 0 1 1 0-1.6z"/></svg>
       微信一键登录
     </button>
     <div class="divider">登录后选择你的角色</div>
@@ -152,6 +193,7 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--primary)
       <button class="tab" data-tab="plaza">🔥 问题广场</button>
       <button class="tab" data-tab="orders">📥 班委接单</button>
       <button class="tab" data-tab="hall">🏆 问题成就栏</button>
+      <button class="tab" data-tab="trash">🗑 删除任务</button>
     </nav>
   </header>
   <main>
@@ -212,8 +254,16 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--primary)
     <!-- 4. 问题成就栏 -->
     <section id="tab-hall" class="hidden">
       <div class="card" style="background:linear-gradient(120deg,#fff8ec,#fff);border:1px solid #ffe1b3">
-        <h3>🏆 已解决的问题（按点赞数排序）</h3>
+        <h3>🏆 已解决的问题（按好评数排序）</h3>
         <div id="hall-list"></div>
+      </div>
+    </section>
+
+    <!-- 5. 删除任务板块 -->
+    <section id="tab-trash" class="hidden">
+      <div class="card" style="border:1px solid #f3c1c3">
+        <h3>🗑 已删除的问题（删除全程留痕，公开可查）</h3>
+        <div id="trash-list"></div>
       </div>
     </section>
   </main>
@@ -223,8 +273,9 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:var(--primary)
 "use strict";
 /* ================= 数据层（localStorage 持久化） ================= */
 const CADRES = ["班长","团支书","组织委员","学习委员","文艺委员","体育委员","心理委员","宣传委员","生活委员"];
-const SLA_HOURS = 48;                 // 处理承诺：接单后 48 小时内解决
-const HOT_WINDOW = 48;                // 热度：近48小时点赞权重加倍
+const SLA_OPTIONS = [24, 48, 72, 168];  // 承诺处理时间分段（小时）
+const HOT_WINDOW = 48;                  // 热度：近48小时点赞权重加倍
+const DEL_NATURES = ["重复问题","内容失实","不当言论","已线下解决","超出班级处理范围","其他"];
 
 /* ===== 环境隔离：预览站与正式站共用同一份代码，靠 URL 路径区分 =====
    /preview/  = 预览环境（改代码先看这里，数据独立，随便测试不污染正式数据）
@@ -249,19 +300,28 @@ function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
 function seedDB(){
   const now = Date.now();
   const d = { issues:[
-    { id:"i1", type:"学习学业", title:"晚自习教室占座严重", content:"期末周自习室座位紧张，存在用书占座一整天不来的情况，希望制定座位使用规范。", owner:"学习委员", author:"李同学", status:"resolved", likes:["a","b","c","d","e"], createdAt:now-6*864e5,
-      trace:[{t:now-6*864e5, text:"李同学 提交了问题"},{t:now-5.8*864e5, text:"学习委员 接单，承诺 48 小时内处理"},{t:now-4*864e5, text:"发布《自习座位公约》，每日 21:00 清理占座物品"},{t:now-3*864e5, text:"学习委员 标记为已解决，SLA 达标 ✅"}]},
-    { id:"i2", type:"生活服务", title:"宿舍热水供应时间太短", content:"冬天热水只供应到晚上 10 点，晚自习后回去经常没热水洗澡。", owner:"生活委员", author:"王同学", status:"doing", likes:["a","b","c"], createdAt:now-2*864e5, acceptedAt:now-1.5*864e5,
-      trace:[{t:now-2*864e5, text:"王同学 提交了问题"},{t:now-1.5*864e5, text:"生活委员 接单，承诺 48 小时内处理"},{t:now-1*864e5, text:"已与后勤处沟通，正在协商延长供应至 23:30"}]},
-    { id:"i3", type:"班级活动", title:"建议组织一次秋游团建", content:"期中后大家压力较大，建议组织一次户外团建增进感情。", owner:"文艺委员", author:"赵同学", status:"open", likes:["a","b"], createdAt:now-0.5*864e5,
-      trace:[{t:now-0.5*864e5, text:"赵同学 提交了问题"}]}
+    { id:"i1", type:"学习学业", title:"晚自习教室占座严重", content:"期末周自习室座位紧张，存在用书占座一整天不来的情况，希望制定座位使用规范。", owner:"学习委员", author:"李同学", status:"resolved", likes:["a","b","c","d","e"], dislikes:["f"], createdAt:now-6*864e5, slaHours:48,
+      trace:[{t:now-6*864e5, text:"李同学 提交了问题"},{t:now-5.8*864e5, text:"学习委员 接单，承诺 48 小时内处理"},{t:now-4*864e5, text:"工作安排：发布《自习座位公约》，每日 21:00 清理占座物品"},{t:now-3*864e5, text:"学习委员 标记为已解决，SLA 达标 ✅"}]},
+    { id:"i2", type:"生活服务", title:"宿舍热水供应时间太短", content:"冬天热水只供应到晚上 10 点，晚自习后回去经常没热水洗澡。", owner:"生活委员", author:"王同学", status:"doing", likes:["a","b","c"], dislikes:[], createdAt:now-2*864e5, acceptedAt:now-1.5*864e5, slaHours:72, workPlan:"已与后勤处沟通，正在协商延长供应至 23:30，预计两天内给答复。",
+      trace:[{t:now-2*864e5, text:"王同学 提交了问题"},{t:now-1.5*864e5, text:"生活委员 接单，承诺 72 小时内处理"},{t:now-1*864e5, text:"工作安排：已与后勤处沟通，正在协商延长供应至 23:30"}]},
+    { id:"i3", type:"班级活动", title:"建议组织一次秋游团建", content:"期中后大家压力较大，建议组织一次户外团建增进感情。", owner:"文艺委员", author:"赵同学", status:"open", likes:["a","b"], dislikes:[], createdAt:now-0.5*864e5,
+      trace:[{t:now-0.5*864e5, text:"赵同学 提交了问题"}]},
+    { id:"i4", type:"其他", title:"（示例）一条被删除的问题", content:"该问题与「建议组织一次秋游团建」内容重复，已由班长删除。", owner:"文艺委员", author:"孙同学", status:"deleted", likes:[], dislikes:[], createdAt:now-1*864e5,
+      deletion:{ by:"张班长", role:"班长", time:now-0.2*864e5, nature:"重复问题", reason:"与「建议组织一次秋游团建」内容重复，为避免分散讨论，合并到原帖处理。", originStatus:"open" },
+      trace:[{t:now-1*864e5, text:"孙同学 提交了问题"},{t:now-0.2*864e5, text:"张班长（班长）删除了该问题（原为未接单状态）：重复问题"}]},
+    { id:"i5", type:"生活服务", title:"（示例）处理中被删除的问题", content:"反映宿舍楼道灯损坏，后经确认已由后勤统一报修。", owner:"生活委员", author:"周同学", status:"deleted", likes:["a"], dislikes:[], createdAt:now-3*864e5, acceptedAt:now-2.6*864e5, slaHours:24,
+      deletion:{ by:"张班长", role:"班长", time:now-1.2*864e5, nature:"已线下解决", reason:"该问题已由后勤处统一报修并当日修复，班委工作已实际完成，为避免重复积压予以删除。", originStatus:"doing" },
+      trace:[{t:now-3*864e5, text:"周同学 提交了问题"},{t:now-2.6*864e5, text:"生活委员 接单，承诺 24 小时内处理"},{t:now-1.2*864e5, text:"张班长（班长）删除了该问题（原为处理中状态）：已线下解决"}]},
+    { id:"i6", type:"班级活动", title:"（示例）完成后被删除的问题", content:"建议班级统一购买期末复习资料。", owner:"学习委员", author:"吴同学", status:"deleted", likes:["a","b","c"], dislikes:[], createdAt:now-9*864e5, acceptedAt:now-8.5*864e5, resolvedAt:now-7*864e5, slaHours:168,
+      deletion:{ by:"张班长", role:"班长", time:now-2*864e5, nature:"内容失实", reason:"经核实该建议实际由学院统一采购发放，问题前提不成立，故删除已归档记录。", originStatus:"resolved" },
+      trace:[{t:now-9*864e5, text:"吴同学 提交了问题"},{t:now-8.5*864e5, text:"学习委员 接单，承诺 168 小时内处理"},{t:now-7*864e5, text:"学习委员 标记为已解决，SLA 达标 ✅"},{t:now-2*864e5, text:"张班长（班长）删除了该问题（原为已完成状态）：内容失实"}]}
   ]};
   localStorage.setItem(DB_KEY, JSON.stringify(d));
   return d;
 }
 
 /* ================= 工具函数 ================= */
-const $ = s => { const el = document.querySelector(s); return el; };
+const $ = s => document.querySelector(s);
 const fmtTime = t => new Date(t).toLocaleString("zh-CN",{month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"});
 function toast(msg){
   const t = document.createElement("div"); t.className="toast"; t.textContent=msg;
@@ -269,17 +329,20 @@ function toast(msg){
 }
 function hotScore(i){
   const now = Date.now();
-  return i.likes.reduce((s,_,idx)=> s + (now - i.createdAt < HOT_WINDOW*36e5 ? 2 : 1), 0)
-    + Math.max(0, 5 - (now-i.createdAt)/864e5); // 新鲜度加成
+  return i.likes.reduce((s)=> s + (now - i.createdAt < HOT_WINDOW*36e5 ? 2 : 1), 0)
+    + Math.max(0, 5 - (now-i.createdAt)/864e5);
 }
 function slaInfo(i){
   if(i.status!=="doing" || !i.acceptedAt) return null;
-  const left = i.acceptedAt + SLA_HOURS*36e5 - Date.now();
+  const hours = i.slaHours || 48;
+  const left = i.acceptedAt + hours*36e5 - Date.now();
   if(left < 0) return {cls:"sla-over", text:`已超时 ${Math.floor(-left/36e5)}h`};
   const h = Math.floor(left/36e5);
-  return h < 12 ? {cls:"sla-warn", text:`剩余 ${h}h（即将超时）`} : {cls:"sla-ok", text:`SLA 剩余 ${h}h`};
+  return h < 12 ? {cls:"sla-warn", text:`剩余 ${h}h（即将超时）`} : {cls:"sla-ok", text:`SLA ${hours}h · 剩余 ${h}h`};
 }
-const esc = s => s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const canDeleteAny = () => session && ((session.role==="cadre" && session.cadre==="班长") || session.role==="teacher");
+const canOperateOrder = i => session && (session.cadre===i.owner || session.role==="teacher");
 
 /* ================= 登录页逻辑 ================= */
 const roleGrid = $("#role-grid"), cadrePicker = $("#cadre-picker"), cadreGrid = $("#cadre-grid"),
@@ -334,7 +397,7 @@ document.querySelectorAll(".tab").forEach(t=>{
   t.addEventListener("click", ()=>{
     document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
     t.classList.add("active");
-    ["submit","plaza","orders","hall"].forEach(k=>$("#tab-"+k).classList.toggle("hidden", k!==t.dataset.tab));
+    ["submit","plaza","orders","hall","trash"].forEach(k=>$("#tab-"+k).classList.toggle("hidden", k!==t.dataset.tab));
     renderAll();
   });
 });
@@ -347,7 +410,8 @@ $("#f-submit").addEventListener("click", ()=>{
   db.issues.unshift({
     id:"i"+now, type:$("#f-type").value, title, content,
     owner:$("#f-owner").value, author:session.name, status:"open",
-    likes:[], createdAt:now, trace:[{t:now, text:`${session.name} 提交了问题，指定 ${$("#f-owner").value} 负责`}]
+    likes:[], dislikes:[], createdAt:now,
+    trace:[{t:now, text:`${session.name} 提交了问题，指定 ${$("#f-owner").value} 负责`}]
   });
   saveDB();
   $("#f-title").value=""; $("#f-content").value="";
@@ -358,15 +422,70 @@ $("#f-submit").addEventListener("click", ()=>{
 /* ---- 通用：问题卡片渲染 ---- */
 function issueCard(i, opts={}){
   const liked = i.likes.includes(session.name);
-  const statusMap = {open:'<span class="tag tag-status-open">待接单</span>', doing:'<span class="tag tag-status-doing">处理中</span>', resolved:'<span class="tag tag-status-done">已解决</span>'};
+  const disliked = (i.dislikes||[]).includes(session.name);
+  const statusMap = {
+    open:'<span class="tag tag-status-open">待接单</span>',
+    doing:'<span class="tag tag-status-doing">处理中</span>',
+    resolved:'<span class="tag tag-status-done">已解决</span>',
+    deleted:'<span class="tag tag-status-deleted">已删除</span>'
+  };
   const sla = slaInfo(i);
   const canAccept = opts.order && i.status==="open" && (session.role==="cadre" || session.role==="teacher");
-  const canResolve = opts.order && i.status==="doing" && (session.cadre===i.owner || session.role==="teacher");
+  const canResolve = opts.order && i.status==="doing" && canOperateOrder(i);
+  // 删除入口：问题广场（未解决）+ 成就栏（已解决），要求一致
+  const showDelete = (opts.plaza || opts.hall) && i.status!=="deleted" && canDeleteAny();
+  const onTime = i.resolvedAt && i.acceptedAt ? (i.resolvedAt - i.acceptedAt <= (i.slaHours||48)*36e5) : null;
+
+  /* 工作过程面板（班委接单页） */
+  let processHtml = "";
+  if(opts.order && (i.status==="doing" || i.status==="open")){
+    const editable = i.status==="doing" && canOperateOrder(i);
+    processHtml = `<div class="process">
+      <h4>📋 工作过程</h4>
+      <ul>
+        <li><span class="k">📤 问题发布时间</span><span>${fmtTime(i.createdAt)}</span></li>
+        <li><span class="k">📥 接单时间</span><span>${i.acceptedAt ? fmtTime(i.acceptedAt) : "（尚未接单）"}</span></li>
+        <li><span class="k">📝 班委工作安排</span><span>${i.workPlan ? esc(i.workPlan) : "<i style='color:var(--muted)'>（班委尚未填写）</i>"}</span></li>
+        <li><span class="k">✅ 解决问题时间</span><span>${i.resolvedAt ? fmtTime(i.resolvedAt) + (onTime===null?"":(onTime?"（按时完成 ✅）":"（超时完成 ⚠️）")) : "（尚未解决）"}</span></li>
+      </ul>
+      ${editable ? `<div class="plan-edit">
+        <textarea placeholder="填写/更新你的工作安排，如：已联系后勤、计划周三前给出方案…">${esc(i.workPlan||"")}</textarea>
+        <button class="plan-save" data-act="save-plan">保存工作安排</button>
+      </div>` : ""}
+    </div>`;
+  }
+
+  /* 删除理由表单（点击删除后展开） */
+  const delFormHtml = showDelete ? `<div class="del-form hidden">
+      <h4>⚠️ 删除前请填写删除理由（必填，删除后公开留痕）</h4>
+      <label>删除时间</label>
+      <input type="text" value="${fmtTime(Date.now())}" disabled>
+      <label>删除原因的性质</label>
+      <select class="del-nature">${DEL_NATURES.map(n=>`<option>${n}</option>`).join("")}</select>
+      <label>删除动因（请具体说明为什么删除）</label>
+      <textarea class="del-reason" placeholder="例如：与另一帖子内容重复 / 经核实内容失实…"></textarea>
+      <div class="row">
+        <button class="del-confirm" data-act="confirm-delete">确认删除</button>
+        <button class="del-cancel" data-act="cancel-delete">取消</button>
+      </div>
+    </div>` : "";
+
+  /* 删除记录展示（删除任务板块） */
+  const origLabel = { open:"未接单即被删除", doing:"处理中被删除", resolved:"已完成后被删除" };
+  const origClsMap = { open:"orig-open", doing:"orig-doing", resolved:"orig-done" };
+  const delRecordHtml = (i.status==="deleted" && i.deletion) ? `<div class="del-record">
+      <b>删除记录</b> <span class="orig-status ${origClsMap[i.deletion.originStatus]||""}">${origLabel[i.deletion.originStatus]||"状态未记录"}</span><br>
+      🕐 删除时间：${fmtTime(i.deletion.time)}<br>
+      🏷 原因性质：${esc(i.deletion.nature)}<br>
+      💬 删除动因：${esc(i.deletion.reason)}<br>
+      👤 操作人：${esc(i.deletion.by)}（${esc(i.deletion.role)}）
+    </div>` : "";
+
   return `<div class="issue" data-id="${i.id}">
     <div class="issue-top">
       <span class="tag tag-type">${esc(i.type)}</span>
       ${statusMap[i.status]}
-      ${hotScore(i)>=8 ? '<span class="tag tag-hot">🔥 热门</span>' : ""}
+      ${i.status!=="deleted" && hotScore(i)>=8 ? '<span class="tag tag-hot">🔥 热门</span>' : ""}
       <span class="issue-title">${esc(i.title)}</span>
     </div>
     <div class="issue-content">${esc(i.content)}</div>
@@ -375,31 +494,75 @@ function issueCard(i, opts={}){
     </div>
     <div class="issue-actions">
       <button class="like-btn ${liked?"liked":""}" data-act="like">👍 <span>${i.likes.length}</span></button>
+      ${opts.hall ? `<button class="like-btn ${disliked?"disliked":""}" data-act="dislike">👎 <span>${(i.dislikes||[]).length}</span></button>` : ""}
       ${sla ? `<span class="sla ${sla.cls}">⏱ ${sla.text}</span>` : ""}
-      ${canAccept ? '<button class="act-btn act-accept" data-act="accept">接单处理</button>' : ""}
+      ${canAccept ? `<select class="sla-select" title="选择承诺处理时间">${SLA_OPTIONS.map(h=>`<option value="${h}" ${h===48?"selected":""}>承诺 ${h}h 处理</option>`).join("")}</select>
+        <button class="act-btn act-accept" data-act="accept">接单处理</button>` : ""}
       ${canResolve ? '<button class="act-btn act-resolve" data-act="resolve">✔ 标记已解决</button>' : ""}
+      ${showDelete ? '<button class="act-btn act-delete" data-act="toggle-delete">🗑 删除</button>' : ""}
     </div>
+    ${delFormHtml}
+    ${delRecordHtml}
+    ${processHtml}
     ${opts.trace ? `<div class="trace">${i.trace.map(tr=>`<div class="trace-item">${esc(tr.text)}<small>${fmtTime(tr.t)}</small></div>`).join("")}</div>` : ""}
   </div>`;
 }
+
 function bindIssueActions(container){
   container.addEventListener("click", e=>{
     const btn = e.target.closest("[data-act]"); if(!btn) return;
-    const id = btn.closest(".issue").dataset.id;
+    const card = btn.closest(".issue");
+    const id = card.dataset.id;
     const issue = db.issues.find(x=>x.id===id); if(!issue) return;
     const act = btn.dataset.act, now = Date.now();
-    if(act==="like"){
-      const idx = issue.likes.indexOf(session.name);
-      if(idx>=0){ issue.likes.splice(idx,1); } else { issue.likes.push(session.name); toast("👍 已点赞"); }
+    issue.dislikes = issue.dislikes || [];
+    const prevStatus = issue.status;   // 记录操作前的原始状态
+
+    if(act==="like" || act==="dislike"){
+      const arr = act==="like" ? issue.likes : issue.dislikes;
+      const other = act==="like" ? issue.dislikes : issue.likes;
+      const idx = arr.indexOf(session.name);
+      if(idx>=0){ arr.splice(idx,1); }
+      else{
+        arr.push(session.name);
+        const oi = other.indexOf(session.name); if(oi>=0) other.splice(oi,1); // 赞/踩互斥
+        toast(act==="like" ? "👍 已点赞" : "👎 已标记不喜欢");
+      }
     }else if(act==="accept"){
-      issue.status="doing"; issue.acceptedAt=now; issue.owner = session.cadre || issue.owner;
-      issue.trace.push({t:now, text:`${session.name}（${session.cadre||"教师"}）接单，承诺 ${SLA_HOURS} 小时内处理`});
-      toast("📥 接单成功，SLA 计时开始");
+      const sel = card.querySelector(".sla-select");
+      const hours = sel ? parseInt(sel.value,10) : 48;
+      issue.status="doing"; issue.acceptedAt=now; issue.slaHours=hours;
+      issue.owner = session.cadre || issue.owner;
+      issue.trace.push({t:now, text:`${session.name}（${session.cadre||"教师"}）接单，承诺 ${hours} 小时内处理`});
+      toast(`📥 接单成功，SLA ${hours}h 计时开始`);
     }else if(act==="resolve"){
       issue.status="resolved"; issue.resolvedAt=now;
-      const onTime = now - issue.acceptedAt <= SLA_HOURS*36e5;
+      const onTime = now - issue.acceptedAt <= (issue.slaHours||48)*36e5;
       issue.trace.push({t:now, text:`${session.name}（${session.cadre||"教师"}）标记为已解决，SLA ${onTime?"达标 ✅":"超时 ⚠️"}`});
       toast("🏆 问题已归档至成就栏");
+    }else if(act==="save-plan"){
+      const ta = card.querySelector(".plan-edit textarea");
+      const plan = ta.value.trim();
+      if(!plan){ toast("请填写工作安排内容"); return; }
+      issue.workPlan = plan;
+      issue.trace.push({t:now, text:`工作安排：${plan.length>60 ? plan.slice(0,60)+"…" : plan}`});
+      toast("💾 工作安排已保存并留痕");
+    }else if(act==="toggle-delete"){
+      card.querySelector(".del-form").classList.toggle("hidden");
+      return; // 仅展开表单，不触发整页重绘（保留已填内容）
+    }else if(act==="cancel-delete"){
+      card.querySelector(".del-form").classList.add("hidden");
+      return;
+    }else if(act==="confirm-delete"){
+      const nature = card.querySelector(".del-nature").value;
+      const reason = card.querySelector(".del-reason").value.trim();
+      if(!reason){ toast("请填写删除动因"); return; }
+      issue.status = "deleted";
+      issue.deletion = { by:session.name, role:(session.cadre||"教师"), time:now, nature, reason,
+                         originStatus: prevStatus };   // 记录删除前状态，用于删除板块分区
+      const label = { open:"未接单状态", doing:"处理中状态", resolved:"已完成状态" }[prevStatus] || "";
+      issue.trace.push({t:now, text:`${session.name}（${session.cadre||"教师"}）删除了该问题（原为${label}）：${nature}——${reason.length>40 ? reason.slice(0,40)+"…" : reason}`});
+      toast("🗑 已删除，可在「删除任务」板块查看留痕");
     }
     saveDB(); renderAll();
   });
@@ -408,35 +571,61 @@ function bindIssueActions(container){
 /* ---- 渲染各板块 ---- */
 function renderAll(){
   if(!session) return;
+  const alive = db.issues.filter(i=>i.status!=="deleted");
+
   // 我的反馈
   const mine = db.issues.filter(i=>i.author===session.name);
   $("#my-issues").innerHTML = mine.length ? mine.map(i=>issueCard(i,{trace:true})).join("") : '<div class="empty">你还没有提交过反馈</div>';
 
-  // 问题广场（热度/最新排序 + 类型筛选）
+  // 问题广场
   const filter = $("#plaza-filter").value, sort = $("#plaza-sort").value;
-  let list = db.issues.filter(i=>i.status!=="resolved" && (filter==="all" || i.type===filter));
+  let list = alive.filter(i=>i.status!=="resolved" && (filter==="all" || i.type===filter));
   list.sort(sort==="hot" ? (a,b)=>hotScore(b)-hotScore(a) : (a,b)=>b.createdAt-a.createdAt);
-  $("#plaza-list").innerHTML = list.length ? list.map(i=>issueCard(i)).join("") : '<div class="empty">暂无相关问题</div>';
+  $("#plaza-list").innerHTML = list.length ? list.map(i=>issueCard(i,{plaza:true})).join("") : '<div class="empty">暂无相关问题</div>';
 
   // 班委接单
   const isCadre = session.role==="cadre" || session.role==="teacher";
   $("#orders-info").innerHTML = isCadre
-    ? `<h3>接单工作台</h3><p style="font-size:13px;color:var(--muted)">你的身份：<b>${session.cadre||"教师"}</b>。处理承诺（SLA）：接单后 <b>${SLA_HOURS} 小时</b>内解决，超时将标红提醒。</p>`
-    : `<h3>接单工作台</h3><p style="font-size:13px;color:var(--muted)">学生账号仅可查看班委处理进度，接单与办结操作由班委/教师执行。</p>`;
+    ? `<h3>接单工作台</h3><p style="font-size:13px;color:var(--muted)">你的身份：<b>${session.cadre||"教师"}</b>。接单时自选处理承诺（SLA）：<b>24 / 48 / 72 / 168 小时</b>，超时将标红提醒；处理中可随时填写「工作安排」公开进度。</p>`
+    : `<h3>接单工作台</h3><p style="font-size:13px;color:var(--muted)">学生账号可查看班委处理进度与工作安排，接单与办结操作由班委/教师执行。</p>`;
   const of = $("#orders-filter").value;
-  let ol = db.issues.filter(i=>i.status!=="resolved");
+  let ol = alive.filter(i=>i.status!=="resolved");
   if(of==="mine") ol = ol.filter(i=>i.owner===(session.cadre||""));
   else if(of==="pending") ol = ol.filter(i=>i.status==="open");
   else if(of==="doing") ol = ol.filter(i=>i.status==="doing");
   ol.sort((a,b)=>b.createdAt-a.createdAt);
   $("#orders-list").innerHTML = ol.length ? ol.map(i=>issueCard(i,{order:true,trace:true})).join("") : '<div class="empty">暂无相关问题</div>';
 
-  // 成就栏：已解决 + 点赞排序 + 完整留痕
-  const hall = db.issues.filter(i=>i.status==="resolved").sort((a,b)=>b.likes.length-a.likes.length);
-  $("#hall-list").innerHTML = hall.length ? hall.map(i=>issueCard(i,{trace:true})).join("") : '<div class="empty">还没有已解决的问题，期待班委们的第一份成绩单！</div>';
+  // 成就栏：已解决 + 净好评（赞-踩）排序 + 完整留痕
+  const score = i => i.likes.length - (i.dislikes||[]).length;
+  const hall = alive.filter(i=>i.status==="resolved").sort((a,b)=>score(b)-score(a));
+  $("#hall-list").innerHTML = hall.length ? hall.map(i=>issueCard(i,{hall:true,trace:true})).join("") : '<div class="empty">还没有已解决的问题，期待班委们的第一份成绩单！</div>';
+
+  // 删除任务板块：按删除前状态分成三类展示
+  const trashAll = db.issues.filter(i=>i.status==="deleted")
+                            .map(i=>{ i._orig = (i.deletion && i.deletion.originStatus) || "open"; return i; })
+                            .sort((a,b)=>b.deletion.time-a.deletion.time);
+  const groups = [
+    { key:"open",     title:"🚫 未接单即被删除", desc:"问题尚未被任何班委接单，就被班长删除", cls:"g-open" },
+    { key:"doing",    title:"⏳ 处理中被删除",   desc:"班委已接单、工作正在推进时被删除",     cls:"g-doing" },
+    { key:"resolved", title:"✅ 已完成后被删除", desc:"问题已归档到成就栏后，又被删除",       cls:"g-done" }
+  ];
+  $("#trash-list").innerHTML = trashAll.length
+    ? groups.map(g=>{
+        const items = trashAll.filter(i=>i._orig===g.key);
+        return `<div class="trash-group ${g.cls}">
+          <div class="trash-head">
+            <span class="trash-title">${g.title}</span>
+            <span class="trash-count">${items.length} 条</span>
+          </div>
+          <p class="trash-desc">${g.desc}</p>
+          ${items.length ? items.map(i=>issueCard(i,{trace:true})).join("") : '<div class="empty" style="padding:20px 0">该分类下暂无记录</div>'}
+        </div>`;
+      }).join("")
+    : '<div class="empty">暂无被删除的问题</div>';
 }
 ["#plaza-filter","#plaza-sort","#orders-filter"].forEach(s=>$(s).addEventListener("change", renderAll));
-["#my-issues","#plaza-list","#orders-list","#hall-list"].forEach(s=>bindIssueActions($(s)));
+["#my-issues","#plaza-list","#orders-list","#hall-list","#trash-list"].forEach(s=>bindIssueActions($(s)));
 
 /* SLA 倒计时每分钟刷新 */
 setInterval(()=>{ if(session) renderAll(); }, 60000);
